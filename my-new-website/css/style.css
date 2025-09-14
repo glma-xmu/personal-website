@@ -382,7 +382,7 @@ main > section.page.active {
     width: 100%;
     border: none;
     border-bottom: 2px solid #ccc;
-    padding: 10px 0 5px; /* Reduced bottom padding */
+    padding: 10px 0 5px 2px; /* Reduced bottom padding */
     font-size: 1em;
     background: transparent;
     outline: none;
@@ -392,7 +392,7 @@ main > section.page.active {
     width: 100%;
     border: none;
     border-bottom: 2px solid #ccc;
-    padding: 10px 0 5px; /* Reduced bottom padding */
+    padding: 10px 0 5px 2px; /* Reduced bottom padding */
     font-size: 1em;
     background: transparent;
     outline: none;

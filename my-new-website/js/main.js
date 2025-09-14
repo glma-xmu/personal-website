@@ -102,16 +102,31 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // --- Change Password Logic ---
-    saveNewPasswordButton.addEventListener('click', () => {
-        const user = auth.currentUser;
-        if (!user) {
-            alert("You must be logged in to change your password.");
-            return;
-        }
-    
-        const newPassword = newPasswordInput.value;
-        const confirmPassword = confirmPasswordInput.value;
+    // Change password button click
+saveNewPasswordButton.addEventListener('click', async () => {
+    const user = auth.currentUser;
+    if (!user) {
+        alert("You must be logged in to change your password.");
+        return;
+    }
 
+    const currentPassword = document.getElementById('current-password-input').value;
+    const newPassword = document.getElementById('new-password-input').value;
+    const confirmPassword = document.getElementById('confirm-password-input').value;
+
+    // Show loading
+    setLoadingState(saveNewPasswordButton, "Saving...");
+
+    const credential = firebase.auth.EmailAuthProvider.credential(
+        user.email,
+        currentPassword
+    );
+
+    try {
+        // Reauthenticate user
+        await user.reauthenticateWithCredential(credential);
+
+        // Only proceed if reauthentication succeeds
         if (newPassword !== confirmPassword) {
             alert("New passwords do not match. Please try again.");
             return;
@@ -122,15 +137,37 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        user.updatePassword(newPassword).then(() => {
-            alert("Password successfully updated! Please log in again with your new password.");
-            changePasswordModal.style.display = 'none';
-            auth.signOut();
-        }).catch((error) => {
+        await user.updatePassword(newPassword);
+        alert("Password successfully updated! Please log in again with your new password.");
+        changePasswordModal.style.display = 'none';
+        auth.signOut();
+
+    } catch (error) {
+        if (error.code === "auth/wrong-password") {
+            alert("Current password is incorrect. Password update cancelled.");
+        } else {
             console.error("Password change error:", error);
-            alert("Password change failed. Please log in again and try immediately.");
-        });
-    });
+            alert("Password change failed. Please try again.");
+        }
+    } finally {
+        // Reset button state regardless of success/failure
+        resetButtonState(saveNewPasswordButton, "Save New Password");
+    }
+});
+
+// Helper functions (add these if not already in your code)
+function setLoadingState(button, text) {
+    button.textContent = text;
+    button.classList.add("loading");
+    button.disabled = true;
+}
+
+function resetButtonState(button, text) {
+    button.textContent = text;
+    button.classList.remove("loading");
+    button.disabled = false;
+}
+
 
     // Add event listener for "Enter" key on the login modal inputs
     document.getElementById('login-email').addEventListener('keydown', (e) => {
@@ -184,20 +221,9 @@ document.addEventListener('DOMContentLoaded', function() {
         setLoadingState(btn, "Saving...");
         }
     }
-    });
+    })
 
-    function setLoadingState(button, text) {
-    button.textContent = text;
-    button.classList.add("loading");
-    button.disabled = true;
 
-    // Example: reset after 2 seconds (simulate server response)
-    setTimeout(() => {
-        button.textContent = text.replace("...", " Done!");
-        button.classList.remove("loading");
-        button.disabled = false;
-    }, 2000);
-    }
 
     // --- PAGE NAVIGATION LOGIC (Unchanged) ---
     const pageSections = document.querySelectorAll('main > section.page');
@@ -354,6 +380,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         }
     });
+
 
     // --- TOOLTIP LOGIC --- 💡
     calendarGrid.addEventListener('mouseover', function(e) {
