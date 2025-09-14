@@ -1,4 +1,9 @@
+// main.js (fully updated with login modal)
+
 document.addEventListener('DOMContentLoaded', function() {
+
+    // --- FIREBASE SETUP ---
+    // Make sure this config includes your correct databaseURL from the Firebase Console
     const firebaseConfig = {
         apiKey: "AIzaSyC65KZ1lAmMta3zFggqynZoWUuVCNA5r4k",
         authDomain: "my-personal-website-afcf3.firebaseapp.com",
@@ -9,9 +14,13 @@ document.addEventListener('DOMContentLoaded', function() {
         measurementId: "G-G0VW44V5FT",
         databaseURL: "https://my-personal-website-afcf3-default-rtdb.firebaseio.com"
     };
+
+    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
     const auth = firebase.auth();
+
+    // --- AUTHENTICATION & LOGIN MODAL LOGIC --- 🔑
     const loginModal = document.getElementById('login-modal');
     const changePasswordModal = document.getElementById('change-password-modal');
     const loginPromptContainer = document.getElementById('login-prompt-container');
@@ -22,29 +31,46 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmPasswordInput = document.getElementById('confirm-password-input');
     const saveNewPasswordButton = document.getElementById('save-new-password-button');
     const closeChangePasswordButton = document.querySelector('#change-password-modal .close-button');
+
+
+    // This function controls what to show based on login status
     auth.onAuthStateChanged(user => {
         if (user) {
+            // User is signed in, show their email and a logout/change password link
             loginPromptContainer.innerHTML = `Logged in as <strong>${user.email}</strong>. (<span class="logout-link">Logout</span> or <span class="change-password-link">Change Password</span>)`;
+
+            // Add click listener for the logout link
             loginPromptContainer.querySelector('.logout-link').addEventListener('click', () => {
                 auth.signOut();
             });
+
+            // Add click listener for the new change password link to open the modal
             loginPromptContainer.querySelector('.change-password-link').addEventListener('click', () => {
                 changePasswordModal.style.display = 'block';
             });
         } else {
+            // User is signed out, show the "Log in required" link
             loginPromptContainer.innerHTML = `(<span class="login-link">Log in</span> required to edit.)`;
+
+            // Add click listener for the new login link to open the modal
             loginPromptContainer.querySelector('.login-link').addEventListener('click', () => {
                 loginModal.style.display = 'block';
             });
         }
     });
+
+    // --- Modal Controls ---
+
+    // When the user clicks the login button in the modal
     loginButton.addEventListener('click', () => {
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
+
         if (!email || !password) {
             alert("Please enter both email and password.");
             return;
         }
+
         auth.signInWithEmailAndPassword(email, password)
             .then(() => {
                 loginModal.style.display = 'none'; // Close modal on successful login
@@ -54,12 +80,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert("Login failed. Please check your credentials.");
             });
     });
+
+    // Close the login modal
     closeModalButton.addEventListener('click', () => {
         loginModal.style.display = 'none';
     });
+    
+    // Close the change password modal
     closeChangePasswordButton.addEventListener('click', () => {
         changePasswordModal.style.display = 'none';
     });
+    
+    // When the user clicks anywhere outside of the modal, close it
     window.addEventListener('mousedown', (event) => {
         if (event.target === loginModal) {
             loginModal.style.display = 'none';
@@ -68,22 +100,28 @@ document.addEventListener('DOMContentLoaded', function() {
             changePasswordModal.style.display = 'none';
         }
     });
+
+    // --- Change Password Logic ---
     saveNewPasswordButton.addEventListener('click', () => {
         const user = auth.currentUser;
         if (!user) {
             alert("You must be logged in to change your password.");
             return;
         }
+    
         const newPassword = newPasswordInput.value;
         const confirmPassword = confirmPasswordInput.value;
+
         if (newPassword !== confirmPassword) {
             alert("New passwords do not match. Please try again.");
             return;
         }
+
         if (newPassword.length < 6) {
             alert("Password must be at least 6 characters long.");
             return;
         }
+
         user.updatePassword(newPassword).then(() => {
             alert("Password successfully updated! Please log in again with your new password.");
             changePasswordModal.style.display = 'none';
@@ -93,26 +131,33 @@ document.addEventListener('DOMContentLoaded', function() {
             alert("Password change failed. Please log in again and try immediately.");
         });
     });
+
+    // Add event listener for "Enter" key on the login modal inputs
     document.getElementById('login-email').addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             document.getElementById('login-button').click();
         }
     });
+
     document.getElementById('login-password').addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             document.getElementById('login-button').click();
         }
     });
+
+    // Add event listener for "Enter" key on the change password modal inputs
     document.getElementById('new-password-input').addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             document.getElementById('save-new-password-button').click();
         }
     });
+
     document.getElementById('confirm-password-input').addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             document.getElementById('save-new-password-button').click();
         }
     });
+
     document.addEventListener("keydown", function(event) {
         if (event.key === "Escape") {
         // Find all modals
@@ -123,10 +168,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         }
     });
+
+
     document.addEventListener("keydown", function(event) {
     if (event.key === "Enter") {
         const loginModal = document.getElementById("login-modal");
         const changeModal = document.getElementById("change-password-modal");
+
         if (loginModal.style.display === "block") {
         let btn = document.getElementById("login-button");
         setLoadingState(btn, "Logging in...");
@@ -137,19 +185,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     });
+
     function setLoadingState(button, text) {
     button.textContent = text;
     button.classList.add("loading");
     button.disabled = true;
+
+    // Example: reset after 2 seconds (simulate server response)
     setTimeout(() => {
         button.textContent = text.replace("...", " Done!");
         button.classList.remove("loading");
         button.disabled = false;
     }, 2000);
     }
+
+    // --- PAGE NAVIGATION LOGIC (Unchanged) ---
     const pageSections = document.querySelectorAll('main > section.page');
     const navLinks = document.querySelectorAll('nav a[data-target]');
     const header = document.querySelector('header');
+
     function showPage(targetId) {
         if (targetId === 'home') {
             header.style.display = 'block';
@@ -166,14 +220,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         localStorage.setItem('activePage', targetId);
     }
+
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             showPage(link.dataset.target);
         });
     });
+
     const savedPage = localStorage.getItem('activePage');
     showPage(savedPage || 'home');
+
+    // --- PROTECTED LINK LOGIC (Unchanged) ---
     const correctPasscode = 'xmuchow123';
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('protected-link')) {
@@ -186,13 +244,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    // --- CALENDAR LOGIC ---
     const calendarGrid = document.getElementById('calendar-grid');
     const nameEditorPanel = document.getElementById('name-editor-panel');
     const nameListEditor = document.getElementById('name-list-editor');
     const tooltip = document.getElementById('tooltip');
     let currentDate = new Date();
     let reservations = {};
+
+    // Render the empty calendar frame immediately
     renderCalendar();
+
+    // Fetch and listen for real-time updates from Firebase
     const reservationsRef = database.ref('reservations');
     reservationsRef.on('value', (snapshot) => {
         const data = snapshot.val();
@@ -202,6 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error("Firebase read failed: " + error.name + " - " + error.message);
         alert("Could not load schedule data. Check console for errors.");
     });
+
     function renderCalendar() {
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
@@ -252,6 +317,8 @@ document.addEventListener('DOMContentLoaded', function() {
             calendarGrid.appendChild(dayCell);
         }
     }
+
+    // --- CLICK LISTENER WITHOUT PASSCODE ---
     calendarGrid.addEventListener('click', function(e) {
         const dayCell = e.target.closest('.calendar-day');
         if (!dayCell || dayCell.classList.contains('past-day') || dayCell.classList.contains('unbookable-day')) return;
@@ -269,6 +336,8 @@ document.addEventListener('DOMContentLoaded', function() {
             nameEditorPanel.style.display = 'flex';
         }
     });
+
+    // --- SAVE DATA TO FIREBASE (Unchanged) ---
     document.getElementById('save-name-list').addEventListener('click', function() {
         const dateString = nameEditorPanel.dataset.date;
         const time = nameEditorPanel.dataset.time;
@@ -285,34 +354,44 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         }
     });
+
+    // --- TOOLTIP LOGIC --- 💡
     calendarGrid.addEventListener('mouseover', function(e) {
         if (e.target.classList.contains('time-slot')) {
             const dateString = e.target.closest('.calendar-day').dataset.date;
             const time = e.target.dataset.time;
             const namesString = reservations[dateString]?.[time] || '';
+            
             const reservedCount = namesString.split('\n').filter(name => name.trim() !== '').length;
+            
             if (reservedCount > 0) {
                 tooltip.textContent = `${reservedCount} ${reservedCount === 1 ? 'person has' : 'people have'} booked.`;
                 tooltip.style.display = 'block';
             }
         }
     });
+
     calendarGrid.addEventListener('mousemove', function(e) {
         if (tooltip.style.display === 'block') {
             tooltip.style.left = `${e.pageX + 15}px`;
             tooltip.style.top = `${e.pageY + 15}px`;
         }
     });
+
     calendarGrid.addEventListener('mouseout', function(e) {
         if (e.target.classList.contains('time-slot')) {
             tooltip.style.display = 'none';
         }
     });
+
+    // --- NAVIGATION AND EDITOR CLOSE BUTTONS ---
     document.getElementById('close-editor').addEventListener('click', () => nameEditorPanel.style.display = 'none');
+    
     document.getElementById('prev-month').addEventListener('click', () => {
         currentDate.setMonth(currentDate.getMonth() - 1);
         renderCalendar();
     });
+
     document.getElementById('next-month').addEventListener('click', () => {
         currentDate.setMonth(currentDate.getMonth() + 1);
         renderCalendar();
