@@ -5,23 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guoliang Ma - Personal Page</title>
     
-    <!-- Link to the CSS stylesheet -->
     <link rel="stylesheet" href="css/style.css">
     
-    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
     
-    <!-- NEW: Added a div for the hover tooltip -->
     <div id="tooltip" class="tooltip"></div>
 
-    <!-- Navigation Ribbon -->
     <nav>
         <div class="nav-container">
             <ul>
@@ -34,20 +29,16 @@
         </div>
     </nav>
 
-    <!-- This main container will hold and center all the content -->
     <div class="container">
 
-        <!-- Header section with your picture, name, and title -->
         <header>
             <img src="images/profile.jpg" alt="glma profile picture" class="profile-pic" onerror="this.onerror=null;this.src='https://placehold.co/150x150/6667ab/ffffff?text=ML';">
             <h1>Guoliang Ma</h1>
             <p class="bio">Assistant Professor at Xiamen University, Ph.D.</p>
         </header>
 
-        <!-- Main content of the page -->
         <main>
 
-            <!-- Each section is now a "page" that can be shown or hidden -->
             <section id="about" class="page">
                 <h2>About Me</h2>
                 <p>
@@ -157,7 +148,6 @@
                     <div id="calendar-grid"></div>
                 </div>
 
-                <!-- NEW: Panel for the name list text editor -->
                 <div id="name-editor-panel" class="name-list-panel">
                     <div class="name-list-content">
                         <button id="close-editor" class="close-button">&times;</button>
@@ -170,7 +160,6 @@
 
         </main>
 
-        <!-- A simple footer -->
         <footer>
             <p>&copy; 2025 Guoliang Ma</p>
             <p style="font-size: 0.8em; color: #666;">Created with assistance from Gemini</p>
@@ -179,22 +168,64 @@
     </div>
 
     <div id="login-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>Admin Login</h2>
+
+        <div class="input-container">
+        <i class="fas fa-envelope icon"></i>
+        <div class="input-wrapper">
+            <input type="email" id="login-email" placeholder=" " required>
+            <span class="placeholder-label">Email</span>
+        </div>
+        </div>
+
+        <div class="input-container">
+        <i class="fas fa-lock icon"></i>
+        <div class="input-wrapper">
+            <input type="password" id="login-password" placeholder=" " required>
+            <span class="placeholder-label">Password</span>
+        </div>
+        </div>
+
+        <button id="login-button">Log In</button>
+    </div>
+    </div>
+
+
+    
+    <div id="change-password-modal" class="modal">
         <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h2>Admin Login</h2>
-            <input type="email" id="login-email" placeholder="Email" required>
-            <input type="password" id="login-password" placeholder="Password" required>
-            <button id="login-button">Log In</button>
+        <span class="close-button">&times;</span>
+        <h2>Change Password</h2>
+
+        <!-- New Password -->
+        <div class="input-container">
+            <i class="fas fa-key icon"></i>
+            <div class="input-wrapper">
+            <input type="password" id="new-password-input" placeholder=" " required>
+            <span class="placeholder-label">New Password</span>
+            </div>
+        </div>
+
+        <!-- Confirm New Password -->
+        <div class="input-container">
+            <i class="fas fa-key icon"></i>
+            <div class="input-wrapper">
+            <input type="password" id="confirm-password-input" placeholder=" " required>
+            <span class="placeholder-label">Confirm New Password</span>
+            </div>
+        </div>
+
+        <button id="save-new-password-button">Save New Password</button>
         </div>
     </div>
 
+    
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
-
     
     <script src="js/main.js"></script>
 </body>
 </html>
-
-
