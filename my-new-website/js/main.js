@@ -62,24 +62,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Modal Controls ---
 
     // When the user clicks the login button in the modal
-    loginButton.addEventListener('click', () => {
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
+loginButton.addEventListener('click', () => {
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
 
-        if (!email || !password) {
-            alert("Please enter both email and password.");
-            return;
-        }
+    // Show loading
+    setLoadingState(loginButton, "Logging in...");
 
-        auth.signInWithEmailAndPassword(email, password)
-            .then(() => {
-                loginModal.style.display = 'none'; // Close modal on successful login
-            })
-            .catch(error => {
-                console.error("Login Error:", error);
-                alert("Login failed. Please check your credentials.");
-            });
-    });
+    if (!email || !password) {
+        alert("Please enter both email and password.");
+        return;
+    }
+
+    auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+            loginModal.style.display = 'none'; // Close modal on successful login
+            resetButtonState(loginButton, "Log in");
+        })
+        .catch(error => {
+            console.error("Login Error:", error);
+            alert("Login failed. Please check your credentials.");
+            resetButtonState(loginButton, "Log in");
+        });
+});
 
     // Close the login modal
     closeModalButton.addEventListener('click', () => {
@@ -262,12 +267,14 @@ function resetButtonState(button, text) {
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('protected-link')) {
             e.preventDefault();
+
             const enteredPasscode = prompt('Please enter the passcode to access this file:');
             if (enteredPasscode === correctPasscode) {
                 window.open(e.target.dataset.link, '_blank');
             } else if (enteredPasscode !== null) {
                 alert("Incorrect passcode.");
             }
+
         }
     });
 
